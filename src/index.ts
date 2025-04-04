@@ -40,9 +40,9 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-const PORT = process.env.PORT || 3000;
+const PORT = (process.env.PORT || 3000) as number;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0,0,0,0", () => {
   console.log(`Server is running on port ${PORT}`);
 });
 

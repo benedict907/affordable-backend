@@ -1,17 +1,18 @@
 {
-  "name": "mansalema-backend",
+  "name": "affordable-backend",
   "version": "1.0.0",
   "description": "This is a backend for Mansalema Security Operations Management to simplify the management of complex security services.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "prod": "node dist/index.js"
   },
   "keywords": [
     "backend",
-    "mansalema"
+    "affordable"
   ],
   "author": "",
   "license": "ISC",
