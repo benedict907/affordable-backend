@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
-import User from "../models/user.model";
 import CustomRequest from "../utils/types/express";
 import { ResetPasswordDto } from "../utils/types/user";
 
 const login = async (req: Request, res: Response): Promise<any> => {
   try {
-    console.log("sdfsdf", req);
     // const errors = validationResult(req);
     // if (!errors.isEmpty()) {
     //   return res.status(400).json({ status: "ERROR", errors: errors.array() });

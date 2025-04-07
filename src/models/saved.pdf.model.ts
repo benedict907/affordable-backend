@@ -1,21 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
 const itinerarySchema = new Schema({
-  confirmationDetails: {
-    type: {
-      confirmationNumber: { type: String, required: true },
-      passengerList: {
-        type: [String],
-        required: true,
-      },
-      selectedEndDate: { type: String, required: false },
-      selectedStartDate: { type: String, required: false },
-    },
-    required: false,
-  },
-  imageName: {
-    type: String,
-    required: false,
-  },
   main: {
     type: {
       title: { type: String, required: true },
@@ -44,7 +28,7 @@ const itinerarySchema = new Schema({
       emergencyNumberUK: { type: String, required: false },
     },
 
-    required: false,
+    required: true,
   },
   transportation: {
     type: [
