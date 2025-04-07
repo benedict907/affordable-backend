@@ -22,6 +22,7 @@ checkUploadsDirExist();
 
 app.use(morgan("tiny"));
 app.use(cors());
+app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
   const htmlContent = `
@@ -41,10 +42,16 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const PORT = (process.env.PORT || 3000) as number;
-
-app.listen(PORT, "0,0,0,0", () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const ENV = process.env.ENVIRONMENT || "development";
+if (ENV === "development") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+} else {
+  app.listen(PORT, "0,0,0,0", () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
 app.use("/user/v1", userRouter);
 app.use("/api/itinerary", pdfRouter);
