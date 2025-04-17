@@ -28,15 +28,15 @@ const itinerarySchema = new Schema({
   },
   flights: {
     type: {
-      arrivalFlightNumber: { type: String, required: true },
-      departureFlightNumber: { type: String, required: true },
-      departureTime: { type: String, required: true },
-      arrivalTime: { type: String, required: true },
-      arrivalCity: { type: String, required: true },
-      departureCity: { type: String, required: true },
+      arrivalFlightNumber: { type: String, required: false },
+      departureFlightNumber: { type: String, required: false },
+      departureTime: { type: String, required: false },
+      arrivalTime: { type: String, required: false },
+      arrivalCity: { type: String, required: false },
+      departureCity: { type: String, required: false },
     },
 
-    required: true,
+    required: false,
   },
   emergencyContacts: {
     type: {
