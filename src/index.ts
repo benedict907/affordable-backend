@@ -22,6 +22,24 @@ checkUploadsDirExist();
 
 app.use(morgan("tiny"));
 app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:3001",
+  "https://travelbugvoucher.com/",
+  "https://api.travelbugvoucher.com",
+];
+
+const corsOptions = {
+  origin: (origin: any, callback: any) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,POST,PUT,DELETE",
+};
+app.use(cors(corsOptions));
 app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
