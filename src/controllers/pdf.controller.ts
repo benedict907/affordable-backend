@@ -4,6 +4,9 @@ import { Request, Response } from "express";
 import Itinerary from "../models/pdf.model";
 import { upload } from "../utils/helpers/multer";
 const router = Router();
+const fs = require("fs");
+const path = require("path");
+import mime from "mime-types";
 
 interface Flight {
   arrivalFlightNumber: string;
@@ -62,6 +65,39 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+router.get(
+  "/base64-image",
+  async (req: Request, res: Response): Promise<void> => {
+    const filename = req.query.filename;
+    console.log("Filename:", filename);
+    if (!filename) {
+      res.status(400).json({ error: "Filename is required" });
+    }
+    console.log("__dirname:", process.cwd());
+
+    const filePath = path.join(process.cwd(), "/uploads", filename);
+    console.log("Uploads Directory:", filePath);
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ error: "File not found" });
+    }
+
+    // Detect mime type
+    const mimeType = mime.lookup(filePath);
+
+    // Read file and encode
+    fs.readFile(filePath, (err: any, data: any) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).json({ error: "Failed to read file" });
+      }
+
+      const base64 = `data:${mimeType};base64,${data.toString("base64")}`;
+      res.json({ filename, base64 });
+    });
+  }
+);
+
 router.delete("/:id", async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
@@ -83,117 +119,6 @@ router.delete("/:id", async (req: Request, res: Response): Promise<void> => {
 router.post(
   "/",
   upload.single("image"), // Use multer to handle file uploads
-  // [
-  //   // Flights Validation
-  //   body("flights")
-  //     .exists()
-  //     .withMessage("Flights are required.")
-  //     .custom((flights: Flight) => {
-  //       if (
-  //         typeof flights.arrivalFlightNumber !== "string" ||
-  //         typeof flights.departureFlightNumber !== "string" ||
-  //         typeof flights.departureTime !== "string" ||
-  //         typeof flights.arrivalTime !== "string" ||
-  //         typeof flights.arrivalCity !== "string" ||
-  //         typeof flights.departureCity !== "string"
-  //       ) {
-  //         throw new Error("Each flight must have valid fields.");
-  //       }
-
-  //       return true;
-  //     }),
-
-  //   // Emergency Contact Validation
-  //   body("emergencyContacts")
-  //     .exists()
-  //     .withMessage("Emergency contact is required.")
-  //     .custom((contact: EmergencyContact) => {
-  //       if (
-  //         typeof contact.emergencyContactKerala !== "string" ||
-  //         typeof contact.emergencyNumberUK !== "string"
-  //       ) {
-  //         throw new Error("Each contact must have valid fields.");
-  //       }
-
-  //       return true;
-  //     }),
-
-  //   // Transportation Validation
-  //   body("transportation")
-  //     .exists()
-  //     .withMessage("Transportation is required.")
-  //     .isArray()
-  //     .withMessage("Transportation must be an array.")
-  //     .custom((transportation: Transportation[]) => {
-  //       transportation.forEach((item: Transportation) => {
-  //         if (
-  //           typeof item.service !== "string" ||
-  //           typeof item.status !== "string" ||
-  //           typeof item.transfers !== "string"
-  //         ) {
-  //           throw new Error("Each transportation item must have valid fields.");
-  //         }
-  //       });
-  //       return true;
-  //     }),
-
-  //   // Hotel Validation
-  //   body("hotelItinerary")
-  //     .exists()
-  //     .withMessage("Hotel details are required.")
-  //     .isArray()
-  //     .withMessage("Hotel must be an array.")
-  //     .custom((hotels) => {
-  //       interface Hotel {
-  //         hotelName: string;
-  //         status: string;
-  //         mealPlan: string;
-  //         rooms: string;
-  //         roomType: string;
-  //         duration: number;
-  //       }
-
-  //       hotels.forEach((hotel: Hotel) => {
-  //         if (
-  //           typeof hotel.hotelName !== "string" ||
-  //           typeof hotel.status !== "string" ||
-  //           typeof hotel.mealPlan !== "string" ||
-  //           typeof hotel.rooms !== "string" ||
-  //           typeof hotel.roomType !== "string" ||
-  //           typeof hotel.duration !== "number"
-  //         ) {
-  //           throw new Error("Each hotel must have valid fields.");
-  //         }
-  //       });
-  //       return true;
-  //     }),
-
-  //   // Ground Itinerary Validation
-  //   body("groundItinerary")
-  //     .exists()
-  //     .withMessage("Ground itinerary is required.")
-  //     .isArray()
-  //     .withMessage("Ground itinerary must be an array.")
-  //     .custom((itineraries) => {
-  //       interface DailyTask {
-  //         task: string;
-  //         time?: string;
-  //         description: string;
-  //         bulletPoints?: string;
-  //       }
-
-  //       interface GroundItinerary {
-  //         dailyTasks: DailyTask[];
-  //       }
-
-  //       itineraries.forEach((itinerary: GroundItinerary) => {
-  //         if (!Array.isArray(itinerary.dailyTasks)) {
-  //           throw new Error("Daily tasks must be an array.");
-  //         }
-  //       });
-  //       return true;
-  //     }),
-  // ],
   async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -223,19 +148,7 @@ router.post(
     const hotelItinerary = parseJSONArray("hotelItinerary");
     const groundItinerary = parseJSONArray("groundItinerary");
     const transportation = parseJSONArray("transportation");
-    console.log(
-      "dffdf",
-      main,
-      confirmationDetails,
-      flights,
-      importantPoints,
-      travelTips,
-      customBulletPoint,
-      hotelItinerary,
-      groundItinerary,
-      transportation,
-      typeof imageFile === "string" ? imageFile : imageFile?.filename
-    );
+
     try {
       const newItinerary = new Itinerary({
         main,
