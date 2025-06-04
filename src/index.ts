@@ -21,16 +21,16 @@ connectDatabase();
 checkUploadsDirExist();
 
 app.use(morgan("tiny"));
-app.use(cors());
 
 const allowedOrigins = [
   "http://localhost:3001",
-  "https://travelbugvoucher.com/",
+  "https://travelbugvoucher.com",
   "https://api.travelbugvoucher.com",
 ];
 
 const corsOptions = {
   origin: (origin: any, callback: any) => {
+    console.log("CORS Origin:", origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -57,7 +57,11 @@ app.get("/", (req: Request, res: Response) => {
   res.send(htmlContent);
 });
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use(
+  "/uploads",
+  cors(corsOptions),
+  express.static(path.join(process.cwd(), "uploads"))
+);
 
 const PORT = (process.env.PORT || 3000) as number;
 const ENV = process.env.ENVIRONMENT || "development";
